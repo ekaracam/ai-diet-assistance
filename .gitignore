@@ -60,3 +60,7 @@ ui-debug.log*
 
 # Claude Code yerel ayarları (launch.json paylaşılır, izinler kişiseldir)
 .claude/settings.local.json
+
+# Yerel ajan araçları — projenin kodu değil, geliştirme ortamının parçası
+.agent/
+.agents/
