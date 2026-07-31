@@ -1,6 +1,30 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
-  }
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@shared/*": ["./shared/*"]
+    }
+  },
+  "include": [
+    "App.tsx",
+    "index.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "shared/**/*.ts",
+    "shared/**/*.tsx",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "web-frontend",
+    "babel.config.js",
+    "metro.config.js",
+    "tailwind.config.js"
+  ]
 }
+

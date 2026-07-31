@@ -1,0 +1,59 @@
+rules_version = '2';
+
+// AI Diyet Asistanı — Firestore güvenlik kuralları
+//
+// Temel ilke: bir kullanıcı SADECE kendi dokümanlarına erişebilir.
+// Veri modeli (shared/services/firestoreService.ts ile birebir uyumlu):
+//   users/{uid}
+//   users/{uid}/history/{entryId}
+//   users/{uid}/dietPlans/{planId}        (özel doküman: "current_weekly")
+//   users/{uid}/chatSessions/{sessionId}
+//
+// Deploy:  firebase deploy --only firestore:rules
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Doküman sahibi mi?
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // Sağlık verisi için temel akıl-sağlığı kontrolleri.
+    // Amaç güvenlik değil, bozuk/kötü niyetli değerlerin veritabanına
+    // yazılıp arayüzü veya AI promptunu bozmasını engellemek.
+    function validProfile(d) {
+      return (!('weight' in d) || d.weight is string && d.weight.size() <= 8)
+          && (!('height' in d) || d.height is string && d.height.size() <= 8)
+          && (!('age' in d)    || d.age is string    && d.age.size() <= 4)
+          && (!('name' in d)   || d.name is string   && d.name.size() <= 100)
+          && (!('email' in d)  || d.email is string  && d.email.size() <= 320)
+          && (!('goal' in d)   || d.goal in ['lose', 'maintain', 'gain'])
+          && (!('gender' in d) || d.gender == null || d.gender in ['male', 'female']);
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validProfile(request.resource.data);
+      // Hesap silme yalnızca sunucu/admin SDK üzerinden yapılır.
+      allow delete: if false;
+
+      match /history/{entryId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /dietPlans/{planId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /chatSessions/{sessionId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // Yukarıda açıkça izin verilmeyen her yol kapalı.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

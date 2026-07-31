@@ -1,0 +1,278 @@
+@import "tailwindcss";
+
+/* ============================================
+   AI DIYETISYEN — UNIFIED DESIGN TOKENS
+   Premium Dark + Glassmorphism
+   ============================================ */
+
+:root {
+  /* ── Core Palette ── */
+  --obsidian-deep: #05070A;
+  --obsidian-base: #0D1117;
+  --obsidian-elevated: #161B22;
+  --obsidian-surface: #1C2128;
+
+  /* ── Accent Colors ── */
+  --cyber-emerald: #00FF87;
+  --electric-mint: #60EFFF;
+  --soft-gold: #FFD700;
+  --neo-rose: #FF4757;
+
+  /* ── Text Colors ── */
+  --text-primary: #EDEDED;
+  --text-secondary: #8B949E;
+  --text-muted: #484F58;
+
+  /* ── Glass System ── */
+  --glass-bg: rgba(13, 17, 23, 0.6);
+  --glass-bg-heavy: rgba(13, 17, 23, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.15);
+  --glass-blur: 40px;
+
+  /* ── Glow System ── */
+  --glow-emerald: 0 0 30px rgba(0, 255, 135, 0.3);
+
+  /* ── Spacing ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* ── Radius ── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* ── Transitions ── */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+
+  /* ── Bottom Nav ── */
+  --bottom-nav-height: 72px;
+}
+
+/* ── Tailwind v4 Theme ── */
+@theme inline {
+  --color-obsidian-deep: var(--obsidian-deep);
+  --color-obsidian-base: var(--obsidian-base);
+  --color-obsidian-elevated: var(--obsidian-elevated);
+  --color-obsidian-surface: var(--obsidian-surface);
+
+  --color-cyber-emerald: var(--cyber-emerald);
+  --color-electric-mint: var(--electric-mint);
+  --color-soft-gold: var(--soft-gold);
+  --color-neo-rose: var(--neo-rose);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-background: var(--obsidian-deep);
+  --color-foreground: var(--text-primary);
+
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+/* ============================================
+   GLOBAL RESETS
+   ============================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--obsidian-deep);
+  color: var(--text-primary);
+  font-family: var(--font-inter, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  padding-bottom: var(--bottom-nav-height);
+}
+
+/* ============================================
+   GLASSMORPHISM
+   ============================================ */
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.glass-panel-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(60px);
+  -webkit-backdrop-filter: blur(60px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.glass-card {
+  background: rgba(13, 17, 23, 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-normal) var(--ease-out-expo);
+}
+
+.glass-card:hover {
+  border-color: var(--glass-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-button {
+  position: relative;
+  background: rgba(0, 255, 135, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 255, 135, 0.3);
+  border-radius: var(--radius-full);
+  color: var(--cyber-emerald);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-spring);
+  overflow: hidden;
+}
+
+.glass-button:hover {
+  background: rgba(0, 255, 135, 0.2);
+  border-color: rgba(0, 255, 135, 0.5);
+  box-shadow: var(--glow-emerald);
+  transform: scale(1.04);
+}
+
+.glass-button:active {
+  transform: scale(0.98);
+}
+
+.glass-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--duration-fast);
+}
+
+.glass-input::placeholder {
+  color: var(--text-muted);
+}
+
+.glass-input:focus {
+  border-color: rgba(0, 255, 135, 0.4);
+  box-shadow: 0 0 0 1px rgba(0, 255, 135, 0.1);
+}
+
+/* ============================================
+   TEXT EFFECTS
+   ============================================ */
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--cyber-emerald), var(--electric-mint));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 135, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(0, 255, 135, 0.4); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s var(--ease-out-expo) forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--obsidian-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--obsidian-elevated);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+::selection {
+  background: rgba(0, 255, 135, 0.3);
+  color: var(--text-primary);
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

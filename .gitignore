@@ -31,6 +31,7 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
 
 # typescript
@@ -39,3 +40,12 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# build artifacts (GitHub tek dosya limiti 100 MB — APK'lar bunu aşar)
+*.apk
+*.aab
+*.ipa
+
+# scratch / deneme dosyaları (gizli anahtar sızdırmamak için)
+scratch_*.ts
+scratch_*.js

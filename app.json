@@ -1,25 +1,38 @@
 {
   "expo": {
-    "name": "app-setup",
-    "slug": "app-setup",
+    "name": "AI Diyet Asistanı",
+    "slug": "ai-diyet-asistani",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aidiet.asistani"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#FFFDF7",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
+      "package": "com.aidiet.asistani",
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "scheme": "ai-diyet-asistani",
+    "extra": {
+      "eas": {
+        "projectId": "4996d128-fdbc-444a-a974-c0c5b6676d29"
+      }
+    },
+    "plugins": [
+      "expo-status-bar"
+    ]
   }
 }
