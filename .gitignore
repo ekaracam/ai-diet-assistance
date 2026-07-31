@@ -49,3 +49,12 @@ yarn-error.*
 # scratch / deneme dosyaları (gizli anahtar sızdırmamak için)
 scratch_*.ts
 scratch_*.js
+
+# Firebase CLI debug logları (kimlik bilgisi içerebilir)
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+.firebase/
+
+# Claude Code yerel ayarları (launch.json paylaşılır, izinler kişiseldir)
+.claude/settings.local.json

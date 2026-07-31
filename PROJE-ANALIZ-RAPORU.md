@@ -296,11 +296,73 @@ kaldırılmalı.
 - Saf fonksiyonlar için 27 davranış kontrolü çalıştırıldı (kalori sınırı, plan
   geçerliliği, su önerisi, LLM şema doğrulaması) — tümü geçti
 
+### Firestore kurulumu — çözüldü (2026-07-31, aynı gün)
+
+**Belirti:** Profil ekranı boş açılıyor, veriler gelmiyor. Konsolda
+`FirebaseError: Failed to get document because the client is offline`.
+
+**Gerçek sebep:** Ağ sorunu değildi. `ai-diet-d520b` projesinde Cloud Firestore
+API kapalıydı / veritabanı hiç oluşturulmamıştı. REST ile doğrudan sorgulandığında
+gerçek hata çıktı: `403 PERMISSION_DENIED, reason: SERVICE_DISABLED`.
+Firebase JS SDK bu hatayı "client is offline" diye maskeliyor.
+
+> Bu, [firebaseConfig.ts](shared/services/firebaseConfig.ts)'deki
+> `experimentalForceLongPolling: true` ayarının neden eklendiğini de açıklıyor —
+> yanıltıcı "offline" mesajı ağ/Windows sorunu sanılmış. Ayar bu hatayı hiçbir
+> zaman çözemezdi. **Kaldırıldı** (aşağıya bakınız).
+
+#### `experimentalForceLongPolling` kaldırıldı — ölçüm sonucu
+
+Ayar kaldırılıp `getFirestore(app)` varsayılanına dönüldü. Tarayıcıda A/B ölçüldü
+(ilk Firestore isteğinin yanıtının tamamlanma anı, sayfa açılışına göre):
+
+| Yapılandırma | İlk istek başlangıcı | İlk yanıt tamamlandı | Ağ süresi |
+|---|---|---|---|
+| `experimentalForceLongPolling: true` | 301 ms | 394 ms | 93 ms |
+| varsayılan (auto-detect) | 469 ms | 527 ms | 58 ms |
+
+**Sonuç: ölçülebilir bir performans farkı yok.** Tek örneklemli ölçümler ve aradaki
+fark gürültü seviyesinde. Kaldırma kararının gerekçesi hız değil **doğruluk**:
+ayar yanlış teşhis üzerine eklenmişti ve SDK'nın taşıma katmanını kendi seçmesini
+(auto-detect) devre dışı bırakıyordu. Varsayılan, bakımı yapılan yol.
+
+Doğrulama: her iki tarafta `tsc --noEmit` temiz, `next build` başarılı, profil
+Firestore'dan sorunsuz yükleniyor, transport WebChannel olarak anlaşılıyor
+(`/Listen/channel` + `VER`/`RID`/`CVER`).
+
+**Yapılanlar:**
+- Firestore `(default)` veritabanı oluşturuldu (bu adımı sen halletmiştin).
+- Kurallar Firebase konsolundan yayınlandı. Önceki hâli production varsayılanıydı
+  (`allow read, write: if false` — her şey kapalı).
+- Firebase CLI kurulu (14.23.0) ama **kayıtlı oturumu geçersiz** (401 / `projects:list`
+  başarısız). Bu yüzden `firebase deploy` çalışmadı, kurallar konsol editöründen
+  girildi. `.firebaserc` eklendi, böylece CLI oturumu tazelendiğinde
+  `firebase deploy --only firestore:rules` doğrudan çalışacak.
+
+**Uçtan uca doğrulama** (giriş yapmış gerçek oturumun ID token'ı ile):
+
+| Test | Sonuç |
+|---|---|
+| Kendi profilini okuma | `404` — doküman yok, izin verildi |
+| **Başka kullanıcının** profilini okuma | `403` — reddedildi (izolasyon çalışıyor) |
+| Kendi `history` alt koleksiyonu | `200` |
+| Kendi profiline yazma | `200` — `validProfile` kuralı yazımı kabul etti |
+
+Uygulama yenilendiğinde profil Firestore'dan yükleniyor ("Hoş geldin" bloğu
+görünüyor, bu yalnızca `_isLoaded === true` iken render edilir).
+
+> **Not:** Konsola yayınlanan sürüm ile depodaki [firestore.rules](firestore.rules)
+> arasında yalnızca yorum/girinti farkı var (konsole elle yazıldığı için ASCII
+> yorumlar). Mantık birebir aynı. CLI oturumu tazelenip
+> `firebase deploy --only firestore:rules` çalıştırıldığında depo sürümü konsolun
+> üzerine yazacak ve fark kapanacak — **depodaki dosya tek kaynak.**
+
 ### Hâlâ açık — senin kararın veya erişimin gerekiyor
 1. **Gemini API anahtarını iptal et** (dosya silindi ama anahtar hâlâ geçerli).
-2. **`firebase deploy --only firestore:rules`** — kurallar yazıldı, deploy edilmedi.
+2. **`firebase login --reauth`** — CLI oturumu ölü; tazelenmeden hiçbir
+   `firebase deploy` çalışmaz.
 3. **`EXPO_PUBLIC_API_URL` değerini doldur** ve API route'u deploy et.
-4. **Her şeyi commit et** — depoda hâlâ 2 commit var, kod takipsiz.
+4. **Her şeyi commit et** — `.firebaserc` ve rapor güncellemesi henüz commit'lenmedi.
 5. **NativeWind kararı** — kalsın mı, kaldırılsın mı? 80 adet elle yazılmış
    `#00FF87` bu karara bağlı.
 6. **Sürüm hizalaması** — react 19.2.3 / 19.2.4; `@google/generative-ai` →

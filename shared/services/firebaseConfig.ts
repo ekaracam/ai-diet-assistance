@@ -5,7 +5,7 @@
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
-import { getFirestore, initializeFirestore, type Firestore } from 'firebase/firestore';
+import { getFirestore, type Firestore } from 'firebase/firestore';
 
 /**
  * Firebase config — env variable'lardan okunur.
@@ -53,19 +53,18 @@ export const setFirebaseAuth = (customAuth: Auth): void => {
 
 
 
-/** Firestore instance'ını al */
+/**
+ * Firestore instance'ını al
+ *
+ * Burada bir zamanlar `experimentalForceLongPolling: true` vardı; gerekçesi
+ * "Windows'ta 'client is offline' hatasını önlemek" diye yazılmıştı. Gerçek sebep
+ * o değildi: Cloud Firestore API projede kapalıydı ve SDK bu hatayı yanıltıcı
+ * biçimde "client is offline" olarak raporluyordu. API açıldıktan sonra zorlanmış
+ * long polling'e gerek kalmadı — SDK en uygun taşıma katmanını kendi seçer.
+ */
 export const getFirestoreDB = (): Firestore => {
   if (!db) {
-    const app = getFirebaseApp();
-    try {
-      // Next.js (özellikle Windows ortamında) 'client is offline' hatasını önlemek için:
-      db = initializeFirestore(app, {
-        experimentalForceLongPolling: true,
-      });
-    } catch (e) {
-      // Eğer Firestore daha önceden başlatılmışsa (örn. hot reload), mevcudu al
-      db = getFirestore(app);
-    }
+    db = getFirestore(getFirebaseApp());
   }
   return db;
 };
