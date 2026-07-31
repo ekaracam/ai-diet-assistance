@@ -2,6 +2,25 @@ rules_version = '2';
 
 // AI Diyet Asistanı — Firestore güvenlik kuralları
 //
+// ┌────────────────────────────────────────────────────────────────────────┐
+// │ DİKKAT — bu dosyayı düzenlemek TEK BAŞINA hiçbir şeyi değiştirmez.     │
+// │                                                                        │
+// │ Canlıdaki kurallar 2026-07-31'de Firebase konsolundan ELLE yayınlandı, │
+// │ çünkü Firebase CLI oturumu geçersiz (401) ve `firebase login` bu       │
+// │ ortamda çalışmıyor (etkileşimli terminal gerektiriyor).                │
+// │                                                                        │
+// │ Canlı sürüm ile bu dosya MANTIK OLARAK AYNI; fark yalnızca yorum ve    │
+// │ girinti (konsola elle yazıldığı için ASCII yorumlar).                  │
+// │                                                                        │
+// │ Senkronu kalıcı kurmak için:                                           │
+// │   firebase login --reauth                                              │
+// │   firebase deploy --only firestore:rules                               │
+// │ Bu iki komuttan sonra bu dosya tek kaynak olur ve bu not silinebilir.  │
+// │                                                                        │
+// │ Canlı hâli görmek için:                                                │
+// │   console.firebase.google.com/project/ai-diet-d520b/firestore/rules    │
+// └────────────────────────────────────────────────────────────────────────┘
+//
 // Temel ilke: bir kullanıcı SADECE kendi dokümanlarına erişebilir.
 // Veri modeli (shared/services/firestoreService.ts ile birebir uyumlu):
 //   users/{uid}

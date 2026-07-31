@@ -357,12 +357,64 @@ görünüyor, bu yalnızca `_isLoaded === true` iken render edilir).
 > `firebase deploy --only firestore:rules` çalıştırıldığında depo sürümü konsolun
 > üzerine yazacak ve fark kapanacak — **depodaki dosya tek kaynak.**
 
-### Hâlâ açık — senin kararın veya erişimin gerekiyor
-1. **Gemini API anahtarını iptal et** (dosya silindi ama anahtar hâlâ geçerli).
-2. **`firebase login --reauth`** — CLI oturumu ölü; tazelenmeden hiçbir
-   `firebase deploy` çalışmaz.
-3. **`EXPO_PUBLIC_API_URL` değerini doldur** ve API route'u deploy et.
-4. **Her şeyi commit et** — `.firebaserc` ve rapor güncellemesi henüz commit'lenmedi.
+### Kapanış turu (2026-07-31)
+
+**APK silindi** — 224 MB'lık `AI-Diyet-Test.apk` artık diskte yok, ayrıca
+`.gitignore` ile korunuyor.
+
+**Sır maruziyeti daralttıldı.** `GEMINI_API_KEY` kök `.env`'den kaldırıldı:
+kodda tek okunduğu yer `web-frontend/src/app/api/gemini/route.ts` (sunucu tarafı),
+mobil taraf Gemini'ye doğrudan gitmiyor. Yani kökteki kopya canlı bir sırrın
+**hiç kullanılmayan ikinci kopyasıydı**. Artık anahtar tek yerde:
+`web-frontend/.env.local`. Rotasyon da tek yerden yapılacak.
+
+**`.gitignore` sertleştirildi.** Bu iş sırasında `.env.bak_*` yedeği alındığında
+fark edildi ki eski desen (`.env` + `.env*.local`) elle alınan yedekleri
+yakalamıyordu — yedek git tarafından **takip edilecekti**. Yedek silindi (git'e
+hiç girmedi) ve desen `.env*` + `!.env.example` olarak değiştirildi.
+
+**Uçtan uca doğrulama (canlı Gemini ile):**
+- `getAlternativeFood` → HTTP 200, anlamlı Türkçe yanıt
+- `generateWeeklyDietPlan` → HTTP 200; 7 gün, her günde öğün var, tüm kalori
+  değerleri `shared/utils/validation.ts` tarafından tam sayıya normalize edilmiş,
+  gün numaraları 1–7. Yani şema doğrulama katmanı gerçek model çıktısında çalışıyor.
+
+### Hâlâ açık
+
+1. **Gemini anahtarını döndür** — anahtar hâlâ geçerli.
+   *Aciliyet düşük:* git geçmişine hiç girmedi, remote yok, hiçbir yere push
+   edilmedi (doğrulandı). Kalan maruziyet, projenin OneDrive klasöründe olması
+   nedeniyle dosyanın bir süre buluta senkronlanmış olması.
+   *Bunu ben yapamam:* yeni bir API anahtarını okuyup dosyaya yazmak, canlı bir
+   kimlik bilgisini elle taşımak demek — yetki verilmiş olsa da yapmadığım şey.
+   **Adımlar:** aistudio.google.com/apikey → eski anahtarı sil → yeni anahtar
+   oluştur → `web-frontend/.env.local` içindeki `GEMINI_API_KEY=` satırına yapıştır
+   → dev server'ı yeniden başlat. Tek dosya, tek satır.
+
+2. **`firebase login --reauth`** — CLI oturumu geçersiz (401).
+   *Bunu ben yapamam:* `firebase login` ve `login:ci` etkileşimli terminal
+   istiyor, bu ortamdaki kabuk non-interactive → "Cannot run login in
+   non-interactive mode" ile reddediyor. Politika değil, teknik engel.
+   *Etkisi şu an sıfır:* kurallar konsoldan yayınlandı ve çalışıyor. Tek risk
+   depo↔canlı sapmasıydı; [firestore.rules](firestore.rules) dosyasının başına
+   bunu açıkça anlatan bir uyarı bloğu eklendi, böylece kimse dosyayı düzenleyip
+   "canlı da güncellendi" sanmıyor.
+
+3. **`EXPO_PUBLIC_API_URL` + API route deploy** — APK dağıtımına kadar **ertelendi**.
+   *Bunu ben yapamam:* Vercel CLI kurulu değil ve deploy bir hesap girişi
+   gerektiriyor.
+   *Şu an önemi yok:* web tarafı `window.location.origin` kullandığı için
+   etkilenmiyor; APK de silindi. Mobil dağıtım gündeme geldiğinde gerekli olacak.
+   Bugünkü değişiklikten sonra en azından sessizce başarısız olmuyor, anlaşılır
+   hata veriyor.
+
+### Kalan teknik borç (rapor kapsamı dışıydı, dokunulmadı)
+- NativeWind kararı: kalsın mı kaldırılsın mı (80 adet elle yazılmış `#00FF87`)
+- Sürüm hizalaması: react 19.2.3 / 19.2.4; `@google/generative-ai` → `@google/genai`
+- Test runner yok (saf fonksiyonlar doğrulandı ama kalıcı test dosyası yazılmadı)
+- `generateDietPlan` / `getAlternativeFood` backend'de var, hiçbir ekrandan çağrılmıyor
+- ESLint web tarafında 14 hata / 6 uyarı
+- İki ayrı `package-lock.json` → Next.js workspace kökü uyarısı
 5. **NativeWind kararı** — kalsın mı, kaldırılsın mı? 80 adet elle yazılmış
    `#00FF87` bu karara bağlı.
 6. **Sürüm hizalaması** — react 19.2.3 / 19.2.4; `@google/generative-ai` →

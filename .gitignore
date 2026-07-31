@@ -30,9 +30,11 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# local env files
-.env
-.env*.local
+# local env files — HER TÜRLÜ .env varyantı.
+# `.env` + `.env*.local` yeterli değildi: `.env.bak`, `.env.kopya`, `.env.eski`
+# gibi elle alınan yedekler desene uymayıp takip edilebiliyordu.
+.env*
+!.env.example
 
 # typescript
 *.tsbuildinfo
