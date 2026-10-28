@@ -64,3 +64,11 @@ ui-debug.log*
 # Yerel ajan araçları — projenin kodu değil, geliştirme ortamının parçası
 .agent/
 .agents/
+
+# AI assistant instructions (local only)
+.claude/
+.codex/
+AGENTS.md
+CLAUDE.md
+**/AGENTS.md
+**/CLAUDE.md
